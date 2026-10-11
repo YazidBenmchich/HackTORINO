@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HelioScan · Drone PV inspection</title>
+  <link rel="icon"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%232f6ea8'/%3E%3Cpath d='M7 20l4-9h10l4 9z' fill='%23e8eef5'/%3E%3Cpath d='M11 11l-1 9M16 11v9M21 11l1 9M8.5 15.5h15' stroke='%232f6ea8' stroke-width='1.2'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/src/simulation/style.css" />
+</head>
+
+<body>
+  <div id="app">
+    <main id="viewport">
+      <div id="toolbar" class="glass">
+        <button id="btn-follow" class="tool" title="The main camera follows the drone">
+          <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="3" />
+            <path d="M12 2v4M12 18v4M2 12h4M18 12h4" />
+          </svg>
+          <span>Follow drone</span>
+        </button>
+        <button id="btn-overview" class="tool" title="Plant overview">
+          <svg viewBox="0 0 24 24">
+            <path d="M3 9l9-6 9 6-9 6z" />
+            <path d="M3 15l9 6 9-6" />
+          </svg>
+          <span>Overview</span>
+        </button>
+        <button id="btn-labels" class="tool active" title="Show panel ids">
+          <svg viewBox="0 0 24 24">
+            <path d="M4 5h16v10H9l-5 4z" />
+          </svg>
+          <span>Labels</span>
+        </button>
+        <div class="sep"></div>
+        <div class="speed" role="group" aria-label="Simulation speed">
+          <span class="k">Speed</span>
+          <button data-speed="1" class="active">×1</button>
+          <button data-speed="2">×2</button>
+          <button data-speed="4">×4</button>
+          <button data-speed="8">×8</button>
+        </div>
+      </div>
+
+      <div id="feed">
+        <canvas id="hud"></canvas>
+        <div class="feed-bar">
+          <button id="btn-thermal" class="feed-btn" title="Toggle RGB / thermal">
+            <svg viewBox="0 0 24 24">
+              <path d="M14 14.8V5a2 2 0 1 0-4 0v9.8a4 4 0 1 0 4 0z" />
+            </svg>
+            <span>Thermal</span>
+          </button>
+          <button id="btn-expand" class="feed-btn" title="Enlarge the camera feed">
+            <svg viewBox="0 0 24 24">
+              <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div id="tooltip"></div>
+
+      <section id="zone-card" class="glass" hidden>
+        <header class="zc-head">
+          <div>
+            <div class="k">Zone survey</div>
+            <h3 id="zc-title">Zone A</h3>
+          </div>
+          <button id="zc-close" class="zc-close" title="Close">
+            <svg viewBox="0 0 24 24">
+              <path d="M6 6l12 12M18 6L6 18" />
+            </svg>
+          </button>
+        </header>
+        <div class="zc-progress">
+          <div class="bar">
+            <div id="zc-fill"></div>
+          </div>
+          <span id="zc-text" class="mono">0 / 20</span>
+        </div>
+        <div class="zc-map-wrap">
+          <div class="zc-north">N</div>
+          <div id="zc-map" class="zc-map"></div>
+        </div>
+        <div id="zc-drone" class="zc-drone"></div>
+        <button id="zc-inspect" class="btn primary"><span>Inspect this zone</span>
+        </button>
+      </section>
+      <div id="toast"></div>
+    </main>
+
+    <aside id="sidebar">
+      <header class="brand">
+        <div class="title">
+          <h1>HelioScan</h1>
+          <p>Les Garrigues PV plant · 3 zones · 60 panels</p>
+        </div>
+      </header>
+
+      <section class="card mission">
+        <h2>Mission</h2>
+        <div id="insp-type" class="insp-type" role="group" aria-label="Inspection type">
+          <button data-type="modules" class="active">PV modules</button>
+          <button data-type="structure">Structures</button>
+        </div>
+        <div class="kv">
+          <div><span class="k">State</span><span id="mission-state" class="state-badge" data-state="IDLE">Landed</span></div>
+          <div><span class="k">Mode</span><span id="mission-mode">—</span></div>
+          <div><span class="k">Duration</span><span id="mission-time" class="mono">00:00</span></div>
+        </div>
+        <div class="buttons">
+          <button id="btn-start" class="btn primary">Inspect modules</button>
+          <button id="btn-pause" class="btn"><span>Pause</span></button>
+          <button id="btn-return" class="btn">Return to base</button>
+          <button id="btn-reset" class="btn" title="New random faults, drone back on its pad">Reset</button>
+        </div>
+        <div class="progress-head"><span class="k">Progress</span><span id="progress-pct" class="mono">0%</span></div>
+        <div class="bar">
+          <div id="progress-fill"></div>
+        </div>
+        <div class="kpis">
+          <div><span class="k">Scanned</span><b id="progress-text" class="mono">0 / 60</b></div>
+          <div class="ok"><span class="k">Healthy</span><b id="count-ok" class="mono">0</b></div>
+          <div class="defect"><span class="k">Defects</span><b id="count-defect" class="mono">0</b></div>
+          <div><span class="k">Remaining</span><b id="count-pending" class="mono">60</b></div>
+        </div>
+      </section>
+
+      <section class="card telemetry-card">
+        <h2>Telemetry</h2>
+        <div class="telemetry">
+          <div><span class="k">Altitude</span><b id="t-alt" class="mono">0.0 m</b></div>
+          <div><span class="k">Speed</span><b id="t-speed" class="mono">0.0 m/s</b></div>
+          <div><span class="k">Heading</span><b id="t-heading" class="mono">000°</b></div>
+          <div><span class="k">Battery</span><b id="t-battery" class="mono">100%</b></div>
+        </div>
+      </section>
+
+      <section class="card panels">
+        <h2>Panels</h2>
+        <div id="zone-tabs" class="zone-tabs" role="tablist"></div>
+        <div id="panel-list" class="panel-grid"></div>
+        <div class="legend">
+          <span class="pending">Pending</span>
+          <span class="scanning">Scanning</span>
+          <span class="ok">Healthy</span>
+          <span class="defect">Defect</span>
+        </div>
+      </section>
+
+      <section class="card log">
+        <h2>Log <button id="btn-clear-log" class="link">Clear</button></h2>
+        <ol id="event-log"></ol>
+      </section>
+    </aside>
+  </div>
+  <script type="module" src="/src/simulation/main.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,26 @@
+{
+  "name": "helioscan",
+  "version": "1.0.0",
+  "private": true,
+  "description": "HelioScan: autonomous drone inspection of a solar plant (3D simulation) and its operator console",
+  "type": "module",
+  "scripts": {
+    "dev": "node server/server.js",
+    "build": "vite build",
+    "start": "node server/server.js --prod"
+  },
+  "dependencies": {
+    "@fontsource-variable/archivo": "^5.3.0",
+    "@fontsource-variable/inter": "^5.3.0",
+    "@fontsource-variable/martian-mono": "^5.3.0",
+    "express": "^5.3.0",
+    "three": "^0.186.1",
+    "ws": "^8.22.0"
+  },
+  "devDependencies": {
+    "vite": "^8.3.4"
+  },
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  }
+}

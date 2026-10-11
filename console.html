@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0c0e12" />
+  <title>HelioScan · Operator console</title>
+  <link rel="icon"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2308090c'/%3E%3Crect x='5' y='5' width='22' height='22' fill='%2310b981'/%3E%3Cpath d='M12.3 5v22M19.7 5v22M5 12.3h22M5 19.7h22' stroke='%2304140e' stroke-width='1.2' stroke-opacity='.55'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/src/console/console.css" />
+</head>
+
+<body>
+  <div id="app" class="app" data-view="supervision">
+    <nav class="rail" aria-label="Main navigation">
+      <a class="brand" href="#supervision" aria-label="HelioScan, supervision">
+        <svg viewBox="0 0 32 32" aria-hidden="true">
+          <rect x="3" y="3" width="26" height="26" class="brand-cell" />
+          <path d="M11.7 3v26M20.3 3v26M3 11.7h26M3 20.3h26" class="brand-bus" />
+        </svg>
+      </a>
+      <a class="nav" data-view="supervision" href="#supervision"><i data-icon="grid"></i><span>Overview</span></a>
+      <a class="nav" data-view="vol" href="#vol"><i data-icon="drone"></i><span>Flight</span></a>
+      <a class="nav" data-view="panneaux" href="#panneaux"><i data-icon="panel"></i><span>Panels</span></a>
+      <a class="nav" data-view="alertes" href="#alertes"><i data-icon="bell"></i><span>Alerts</span><b class="badge" id="badge-alerts" hidden></b></a>
+      <a class="nav" data-view="interventions" href="#interventions"><i data-icon="wrench"></i><span>Work orders</span><b class="badge quiet" id="badge-wo" hidden></b></a>
+      <a class="nav nav-demo" data-view="scenarios" href="#scenarios"><i data-icon="flash"></i><span>Scenarios</span><b class="badge quiet" id="badge-inc" hidden></b></a>
+      <div class="rail-foot">
+        <span class="link-dot" id="rail-link" title="Link with the plant"></span>
+        <button class="operator" id="operator-btn" aria-haspopup="dialog" aria-controls="operator-pop" title="Operator on duty">OP</button>
+      </div>
+    </nav>
+
+    <div class="main">
+      <header class="topbar">
+        <div class="titles">
+          <h1 id="view-title">Supervision</h1>
+          <span class="site">Les Garrigues solar plant · 3 zones · 60 modules</span>
+        </div>
+        <div class="tools">
+          <span class="chip" id="chip-link"><span class="dot"></span><span class="txt">Connecting…</span><span class="short">Link</span></span>
+          <label class="switch" title="The drone automatically flies out to diagnose any panel whose current drops">
+            <input type="checkbox" id="auto-dispatch" checked />
+            <span class="track" aria-hidden="true"></span>
+            <span class="long">Auto-dispatch drone</span><span class="short">Auto</span>
+          </label>
+          <button class="icon-btn" id="btn-sound" aria-pressed="true" title="Alert sound"><i data-icon="sound"></i></button>
+          <button class="icon-btn" id="btn-notify" title="Browser notifications"><i data-icon="notify"></i></button>
+          <div class="menu" id="demo-menu">
+            <button class="btn ghost small" id="btn-demo" aria-haspopup="menu" aria-expanded="false">Demo<i data-icon="chevron"></i></button>
+            <div class="menu-pop" role="menu" hidden>
+              <button role="menuitem" data-demo="scenarios">Demo scenarios…</button>
+              <button role="menuitem" data-demo="autofaults">Spontaneous faults: <b>off</b></button>
+              <div class="menu-sep"></div>
+              <div class="menu-label">Simulation speed</div>
+              <div class="seg small" role="group" aria-label="Simulation speed">
+                <button data-speed="1" class="on">×1</button><button data-speed="2">×2</button><button data-speed="4">×4</button><button data-speed="8">×8</button>
+              </div>
+              <div class="menu-sep"></div>
+              <button role="menuitem" data-demo="clean">Healthy plant (no hidden faults)</button>
+              <button role="menuitem" data-demo="reset">Random hidden faults</button>
+            </div>
+          </div>
+          <time class="clock mono" id="clock">--:--:--</time>
+        </div>
+      </header>
+
+      <!-- ================================================================ SUPERVISION -->
+      <section class="view" id="view-supervision" aria-labelledby="view-title">
+        <div class="sup-main">
+          <div class="kpis">
+            <div class="kpi kpi-power">
+              <div class="kpi-num">
+                <span class="label">Plant power</span>
+                <b class="big"><span id="k-power">—</span><small>kW</small></b>
+                <span class="sub" id="k-power-sub">expected —</span>
+              </div>
+              <div class="kpi-chart">
+                <div class="legend"><span class="lg-measured">Measured</span><span class="lg-expected">Expected</span><span class="lg-span">15 min</span></div>
+                <div id="chart-power" class="chart"></div>
+              </div>
+            </div>
+            <div class="kpi">
+              <span class="label">Performance ratio</span>
+              <b class="mid" id="k-pr">—</b>
+              <span class="sub">measured / expected</span>
+            </div>
+            <div class="kpi">
+              <span class="label">Irradiance</span>
+              <b class="mid"><span id="k-irr">—</span><small>W/m²</small></b>
+              <span class="sub" id="k-temp">—</span>
+            </div>
+            <div class="kpi" id="kpi-alerts">
+              <span class="label">Panels in alert</span>
+              <b class="mid"><span id="k-alerts">0</span><small>/ 60</small></b>
+              <span class="sub" id="k-alerts-sub">no current drop</span>
+            </div>
+            <div class="kpi" id="kpi-wind">
+              <span class="label">Wind</span>
+              <b class="mid"><span id="k-wind">—</span><small>km/h</small></b>
+              <span class="sub" id="k-wind-sub">—</span>
+            </div>
+          </div>
+
+          <div class="map-card">
+            <div class="map-head">
+              <h2>Plant</h2>
+              <div class="map-legend" aria-label="Map legend">
+                <span class="lg-ramp"><i></i>Module current, 0 → nominal</span>
+                <span class="lg-mark ok">Healthy</span>
+                <span class="lg-mark pending">Not inspected</span>
+                <span class="lg-mark defect">Defect</span>
+                <span class="lg-out warn">Watch</span>
+                <span class="lg-out crit">Critical</span>
+                <span class="lg-drone">Drone</span>
+              </div>
+            </div>
+            <div class="map" id="map-sup"></div>
+            <p class="empty-state" id="sup-empty" hidden>Waiting for the plant: open the simulation (<a href="/" target="_blank" rel="noopener">localhost:3000</a>) in another window.</p>
+          </div>
+        </div>
+
+        <aside class="sup-side">
+          <div class="video-box" data-video>
+            <canvas class="video-canvas"></canvas>
+            <div class="video-top">
+              <span class="drone-tag" data-bind="droneTag">Drone</span>
+              <span class="rec" data-bind="rec"></span>
+            </div>
+            <div class="video-hud mono">
+              <span data-bind="alt">ALT —</span><span data-bind="spd">— m/s</span><span data-bind="hdg">HDG —</span><span data-bind="bat">BAT —</span>
+            </div>
+            <div class="video-empty" data-bind="videoEmpty">No image</div>
+            <a class="video-expand" href="#vol" title="Open flight control" aria-label="Open flight control"><i data-icon="expand"></i></a>
+          </div>
+          <div class="ctrl-row" id="sup-ctrl"></div>
+          <div class="side-sec">
+            <div class="sec-head"><h2>Active alerts</h2><a href="#alertes" class="link">All</a></div>
+            <ol class="alert-mini" id="sup-alerts"></ol>
+          </div>
+          <div class="side-sec">
+            <div class="sec-head"><h2>Activity</h2><a href="#alertes/journal" class="link">Log</a></div>
+            <ol class="log-mini" id="sup-log"></ol>
+          </div>
+        </aside>
+      </section>
+
+      <!-- ================================================================ PILOTAGE -->
+      <section class="view" id="view-vol" hidden>
+        <div class="flight-stage">
+          <div class="video-box big" data-video>
+            <canvas class="video-canvas"></canvas>
+            <div class="video-top">
+              <span class="drone-tag" data-bind="droneTag">Drone</span>
+              <span class="rec" data-bind="rec"></span>
+            </div>
+            <div class="video-hud mono">
+              <span data-bind="alt">ALT —</span><span data-bind="spd">— m/s</span><span data-bind="vspd">— m/s</span><span data-bind="hdg">HDG —</span><span data-bind="bat">BAT —</span>
+            </div>
+            <div class="video-empty" data-bind="videoEmpty">No image</div>
+            <div class="minimap" id="map-flight" title="Click the ground to send the drone there"></div>
+          </div>
+          <div class="sticks" id="sticks" hidden>
+            <div class="stick" data-stick="left" aria-label="Left stick: altitude and yaw"><span class="knob"></span><span class="stick-l">Altitude · yaw</span></div>
+            <div class="keys mono" id="keys-help">
+              <span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> move</span>
+              <span><kbd>↑</kbd><kbd>↓</kbd> altitude · <kbd>←</kbd><kbd>→</kbd> yaw</span>
+              <span id="gamepad-state">Gamepad: not detected</span>
+            </div>
+            <div class="stick" data-stick="right" aria-label="Right stick: forward, back, sideways"><span class="knob"></span><span class="stick-l">Forward · sideways</span></div>
+          </div>
+        </div>
+        <aside class="flight-side">
+          <div class="side-sec">
+            <div class="sec-head"><h2>Flight</h2><span class="state-pill" id="f-state">—</span></div>
+            <div class="btn-grid" id="flight-btns">
+              <button class="btn" data-act="takeoff"><i data-icon="up"></i>Take off</button>
+              <button class="btn" data-act="land"><i data-icon="down"></i>Land here</button>
+              <button class="btn" data-act="pause"><i data-icon="pause"></i><span>Pause</span></button>
+              <button class="btn" data-act="return"><i data-icon="home"></i>Return to base</button>
+            </div>
+            <button class="btn pilot-btn" id="btn-pilot"><i data-icon="stick"></i><span>Take control</span></button>
+            <p class="hint" id="pilot-hint">The drone follows your sticks. With no input for 0.6 s, it brakes and holds its position.</p>
+          </div>
+          <div class="side-sec">
+            <div class="sec-head"><h2>Telemetry</h2></div>
+            <dl class="telemetry">
+              <div><dt>Altitude</dt><dd class="mono" id="t-alt">—</dd></div>
+              <div><dt>Ground speed</dt><dd class="mono" id="t-spd">—</dd></div>
+              <div><dt>Vertical speed</dt><dd class="mono" id="t-vspd">—</dd></div>
+              <div><dt>Heading</dt><dd class="mono" id="t-hdg">—</dd></div>
+              <div><dt>Distance to base</dt><dd class="mono" id="t-dist">—</dd></div>
+              <div><dt>Position</dt><dd class="mono" id="t-pos">—</dd></div>
+              <div class="wide"><dt>Battery</dt><dd class="mono"><span id="t-bat">—</span><span class="bar"><i id="t-bat-bar"></i></span></dd></div>
+            </dl>
+          </div>
+          <div class="side-sec">
+            <div class="sec-head"><h2>Camera</h2><span class="sub" id="t-gimbal">Gimbal —</span></div>
+            <div class="seg" role="group" aria-label="Camera mode">
+              <button data-cam="rgb" class="on">Visible</button><button data-cam="thermal">Thermal</button>
+            </div>
+            <label class="range">
+              <span>Gimbal pitch</span>
+              <input type="range" id="gimbal" min="-90" max="0" step="1" value="-35" disabled />
+            </label>
+          </div>
+          <div class="side-sec">
+            <div class="sec-head"><h2>Mission</h2></div>
+            <div class="seg" role="group" aria-label="Inspection type">
+              <button data-type="modules" class="on">Modules</button><button data-type="structure">Structures</button>
+            </div>
+            <div class="seg" role="group" aria-label="Scope">
+              <button data-zone="" class="on">Whole plant</button><button data-zone="A">Zone A</button><button data-zone="B">Zone B</button><button data-zone="C">Zone C</button>
+            </div>
+            <button class="btn primary" id="btn-mission">Start inspection</button>
+          </div>
+        </aside>
+      </section>
+
+      <!-- ================================================================ PANNEAUX -->
+      <section class="view" id="view-panneaux" hidden>
+        <div class="zones-strip" id="zones-strip"></div>
+        <div class="panels-body">
+          <div class="map-card">
+            <div class="map-head">
+              <h2>Current per module</h2>
+              <div class="map-legend"><span class="lg-ramp"><i></i>0 → nominal</span><span class="lg-out warn">Watch</span><span class="lg-out crit">Critical</span></div>
+            </div>
+            <div class="map" id="map-panels"></div>
+          </div>
+          <div class="table-card">
+            <div class="table-tools">
+              <div class="seg small" role="group" aria-label="Filter by zone" id="panel-filter">
+                <button data-f="all" class="on">All</button><button data-f="A">A</button><button data-f="B">B</button><button data-f="C">C</button><button data-f="alert">In alert</button>
+              </div>
+              <span class="sub" id="panel-count"></span>
+            </div>
+            <div class="table-scroll">
+              <table class="data" id="panel-table">
+                <thead>
+                  <tr>
+                    <th data-sort="id" aria-sort="ascending"><button>Module</button></th>
+                    <th data-sort="current" class="num"><button>Current</button></th>
+                    <th data-sort="expected" class="num"><button>Expected</button></th>
+                    <th data-sort="deviation" class="num"><button>Deviation</button></th>
+                    <th data-sort="power" class="num"><button>Power</button></th>
+                    <th data-sort="inspection"><button>Inspection</button></th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================================ ALERTES -->
+      <section class="view" id="view-alertes" hidden>
+        <div class="alerts-list">
+          <div class="table-tools">
+            <div class="seg small" role="tablist" aria-label="View" id="alert-tabs">
+              <button data-tab="active" class="on" role="tab">Active</button><button data-tab="all" role="tab">History</button><button data-tab="journal" role="tab">Log</button>
+            </div>
+            <span class="sub" id="alert-count"></span>
+          </div>
+          <ol class="alert-rows" id="alert-rows"></ol>
+          <ol class="journal" id="journal" hidden></ol>
+        </div>
+        <article class="alert-detail" id="alert-detail">
+          <p class="empty-state">Select an alert to see the measurement, the drone diagnosis and the history.</p>
+        </article>
+      </section>
+
+      <!-- ================================================================ SCÉNARIOS (démonstration) -->
+      <section class="view" id="view-scenarios" hidden>
+        <div class="sc-main">
+          <p class="sc-intro">Each scenario places an incident in the simulation (visible defect, structural damage, object on the ground, weather), then it is detected the way it would be in the field: module current, sensor, weather station or inverter. With automatic dispatch on, the drone flies out by itself.</p>
+          <div id="sc-groups"></div>
+        </div>
+        <aside class="sc-side">
+          <div class="side-sec">
+            <div class="sec-head"><h2>Demo settings</h2></div>
+            <label class="switch"><input type="checkbox" id="sc-autofaults" /><span class="track" aria-hidden="true"></span><span>Spontaneous faults (automatic alerts)</span></label>
+            <label class="switch"><input type="checkbox" id="sc-autodispatch" /><span class="track" aria-hidden="true"></span><span>Automatic drone dispatch</span></label>
+            <div class="range"><span>Simulation speed</span>
+              <div class="seg small" role="group" aria-label="Simulation speed" id="sc-speed">
+                <button data-speed="1" class="on">×1</button><button data-speed="2">×2</button><button data-speed="4">×4</button><button data-speed="8">×8</button>
+              </div>
+            </div>
+            <div class="btn-grid">
+              <button class="btn" id="sc-clean">Healthy plant</button>
+              <button class="btn ghost" id="sc-random">Random faults</button>
+            </div>
+            <p class="hint">Healthy plant: no hidden faults left, only your incidents exist. The drone goes back to its base.</p>
+          </div>
+          <div class="side-sec">
+            <div class="sec-head"><h2>Simulated incidents</h2><button class="btn ghost small" id="sc-repair-all">Repair all</button></div>
+            <ol class="inc-list" id="inc-list"></ol>
+          </div>
+        </aside>
+      </section>
+
+      <!-- ================================================================ INTERVENTIONS -->
+      <section class="view" id="view-interventions" hidden>
+        <div class="wo-head">
+          <div class="seg small" role="group" aria-label="Filter work orders" id="wo-filter">
+            <button data-f="open" class="on">To do</button><button data-f="done">Closed</button><button data-f="all">All</button>
+          </div>
+          <span class="sub">Created automatically after each drone diagnosis.</span>
+        </div>
+        <ol class="wo-list" id="wo-list"></ol>
+      </section>
+    </div>
+  </div>
+
+  <aside class="drawer" id="drawer" hidden aria-labelledby="drawer-title">
+    <div class="drawer-in" id="drawer-body"></div>
+  </aside>
+
+  <div class="pop" id="operator-pop" role="dialog" aria-label="Operator on duty" hidden>
+    <label class="field"><span>Operator name</span><input id="operator-name" maxlength="40" autocomplete="name" /></label>
+    <p class="sub">Shown in the log and on work orders.</p>
+  </div>
+
+  <div class="tooltip" id="tooltip" role="tooltip" hidden></div>
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+
+  <script type="module" src="/src/console/main.js"></script>
+</body>
+
+</html>
