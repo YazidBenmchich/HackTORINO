@@ -1,0 +1,10 @@
+# Regenerable training data and checkpoints (python training/generate_dataset.py, training/train.py)
+training/dataset/
+training/runs/*/weights/
+*.pt
+
+# Local test server certificate
+tools/.cert/
+
+__pycache__/
+*.pyc

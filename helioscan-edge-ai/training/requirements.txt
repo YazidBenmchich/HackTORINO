@@ -1,0 +1,9 @@
+# Training environment (computer). PyTorch CPU build:
+#   pip install --index-url https://download.pytorch.org/whl/cpu torch torchvision
+ultralytics>=8.4
+pymupdf>=1.25
+opencv-python-headless>=4.10
+numpy>=2.1
+onnx>=1.17
+onnxslim>=0.1
+onnxruntime>=1.20

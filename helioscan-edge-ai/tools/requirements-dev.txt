@@ -1,0 +1,9 @@
+# Local test server and end-to-end evaluation (computer, no board needed)
+numpy>=2.1
+opencv-python-headless>=4.10
+onnxruntime>=1.20
+pymupdf>=1.25
+fastapi>=0.110
+uvicorn>=0.29
+python-socketio>=5.11
+cryptography>=42

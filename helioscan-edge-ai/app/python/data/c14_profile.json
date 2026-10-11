@@ -1,0 +1,82 @@
+{
+  "panel_id": "C14",
+  "panel_mm": [
+    855.0,
+    396.0
+  ],
+  "sheet_mm": [
+    285.0,
+    198.0
+  ],
+  "sheets": [
+    [
+      "A1",
+      "B1",
+      "C1"
+    ],
+    [
+      "A2",
+      "B2",
+      "C2"
+    ]
+  ],
+  "frame_mm": 11.4,
+  "marker": {
+    "dictionary": "DICT_ARUCO_MIP_36h12",
+    "id": 100,
+    "corners_mm": [
+      [
+        22.0,
+        22.0
+      ],
+      [
+        61.8,
+        22.0
+      ],
+      [
+        61.8,
+        61.8
+      ],
+      [
+        22.0,
+        61.8
+      ]
+    ]
+  },
+  "defects": [
+    {
+      "class": "bird_dropping",
+      "sheet": "A1",
+      "bbox_mm": [
+        173.8,
+        91.2,
+        216.2,
+        121.5
+      ]
+    },
+    {
+      "class": "crack",
+      "sheet": "B2",
+      "bbox_mm": [
+        368.0,
+        248.5,
+        440.8,
+        312.8
+      ]
+    },
+    {
+      "class": "bird_dropping",
+      "sheet": "C2",
+      "bbox_mm": [
+        710.8,
+        278.2,
+        741.8,
+        313.8
+      ]
+    }
+  ],
+  "classes": [
+    "bird_dropping",
+    "crack"
+  ]
+}

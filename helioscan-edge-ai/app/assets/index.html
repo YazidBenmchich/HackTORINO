@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
+  <meta name="theme-color" content="#000000" />
+  <title>HelioScan Edge</title>
+  <link rel="icon"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%232f6ea8'/%3E%3Cpath d='M7 20l4-9h10l4 9z' fill='%23e8eef5'/%3E%3Cpath d='M11 11l-1 9M16 11v9M21 11l1 9M8.5 15.5h15' stroke='%232f6ea8' stroke-width='1.2'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div id="stage">
+    <video id="video" playsinline muted autoplay></video>
+    <canvas id="overlay"></canvas>
+  </div>
+
+  <header id="banner">
+    <svg id="map" viewBox="0 0 96 64" aria-hidden="true"></svg>
+    <div class="banner-text">
+      <div id="step-count">Step 1 / 4</div>
+      <div id="step-title">Find the start marker</div>
+      <div id="step-hint"></div>
+    </div>
+  </header>
+
+  <div id="edge-status" title="Processing on the Arduino UNO Q">
+    <span id="link-dot"></span><span id="edge-text">UNO Q · connecting…</span>
+  </div>
+
+  <div id="bottom">
+    <div id="counter"><span id="defect-count">0</span> <span id="defect-word">defects</span></div>
+    <div class="buttons">
+      <button id="btn-next" class="btn" title="Skip to the next step">Next ›</button>
+      <button id="btn-settings" class="btn icon" title="Settings" aria-label="Settings">
+        <svg viewBox="0 0 24 24">
+          <path d="M4 7h10M18 7h2M4 17h4M12 17h8" />
+          <circle cx="16" cy="7" r="2" />
+          <circle cx="10" cy="17" r="2" />
+        </svg>
+      </button>
+      <button id="btn-restart" class="btn icon" title="Restart the scan" aria-label="Restart">
+        <svg viewBox="0 0 24 24">
+          <path d="M4 12a8 8 0 1 0 2.4-5.7" />
+          <path d="M4 4v5h5" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <section id="settings" class="sheet" hidden>
+    <h2>Detection settings</h2>
+    <label class="field">
+      <span class="field-head">YOLO confidence threshold <output id="out-conf"></output></span>
+      <input id="set-conf" type="range" min="0.1" max="0.9" step="0.05" />
+      <small>Lower = more sensitive (finds faint defects, may raise false alarms). Higher = stricter.</small>
+    </label>
+    <label class="field">
+      <span class="field-head">Print type</span>
+      <select id="set-print">
+        <option value="bw">Black &amp; white print</option>
+        <option value="color">Colour print</option>
+      </select>
+      <small>How the panel was printed (used to find the panel and its edges).</small>
+    </label>
+    <label class="check">
+      <input id="set-raw" type="checkbox" />
+      <span>Show raw YOLO detections <small>(every box, before tracking)</small></span>
+    </label>
+    <div class="sheet-buttons">
+      <button id="btn-close-settings" class="btn primary">Done</button>
+    </div>
+  </section>
+
+  <section id="result" class="sheet" hidden>
+    <div id="result-badge"></div>
+    <h2 id="result-title"></h2>
+    <ul id="result-list"></ul>
+    <div class="sheet-buttons">
+      <button id="btn-report" class="btn">Download report</button>
+      <button id="btn-again" class="btn primary">Scan again</button>
+    </div>
+  </section>
+
+  <section id="intro">
+    <div class="intro-card">
+      <h1>HelioScan · Edge AI inspection</h1>
+      <p>The phone is the drone's camera; detection runs on the <b>Arduino UNO Q</b> (YOLO). Hold the phone
+        20–30 cm above the panel and follow the drone's path:</p>
+      <ol>
+        <li>Start on the <b>marker</b> in the top-left corner</li>
+        <li><b>→</b> Move right along the top edge</li>
+        <li><b>↓</b> Move down along the right edge</li>
+        <li><b>←</b> Move left along the bottom edge</li>
+      </ol>
+      <button id="btn-start" class="btn primary big">Start camera</button>
+      <p id="intro-error" class="error" hidden></p>
+    </div>
+  </section>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <script src="libs/socket.io.min.js"></script>
+  <script src="app.js"></script>
+</body>
+
+</html>

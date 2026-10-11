@@ -1,0 +1,342 @@
+{
+  "passed": 14,
+  "total": 14,
+  "flights": [
+    {
+      "condition": "bw / 25 cm",
+      "panel": "defects",
+      "pass": true,
+      "path_complete": true,
+      "findings": [
+        {
+          "number": 1,
+          "type": "bird_dropping",
+          "label": "Bird dropping",
+          "sheet": "A1",
+          "pass": "top pass",
+          "confidence": 0.88,
+          "time": 0.75
+        },
+        {
+          "number": 2,
+          "type": "bird_dropping",
+          "label": "Bird dropping",
+          "sheet": "C2",
+          "pass": "right side",
+          "confidence": 0.87,
+          "time": 15.5
+        },
+        {
+          "number": 3,
+          "type": "crack",
+          "label": "Crack",
+          "sheet": "B2",
+          "pass": "bottom pass",
+          "confidence": 0.56,
+          "time": 21.5
+        }
+      ],
+      "frames": 116,
+      "mean_yolo_ms": 33.6,
+      "mean_pipeline_ms": 44.6
+    },
+    {
+      "condition": "bw / 25 cm",
+      "panel": "blank",
+      "pass": true,
+      "path_complete": true,
+      "findings": [],
+      "frames": 116,
+      "mean_yolo_ms": 29.4,
+      "mean_pipeline_ms": 38.7
+    },
+    {
+      "condition": "bw / far (40 cm)",
+      "panel": "defects",
+      "pass": true,
+      "path_complete": true,
+      "findings": [
+        {
+          "number": 1,
+          "type": "bird_dropping",
+          "label": "Bird dropping",
+          "sheet": "A1",
+          "pass": "top pass",
+          "confidence": 0.83,
+          "time": 0.75
+        },
+        {
+          "number": 2,
+          "type": "bird_dropping",
+          "label": "Bird dropping",
+          "sheet": "C2",
+          "pass": "right side",
+          "confidence": 0.81,
+          "time": 12.5
+        },
+        {
+          "number": 3,
+          "type": "crack",
+          "label": "Crack",
+          "sheet": "B2",
+          "pass": "bottom pass",
+          "confidence": 0.98,
+          "time": 17.25
+        }
+      ],
+      "frames": 98,
+      "mean_yolo_ms": 28.7,
+      "mean_pipeline_ms": 36.2
+    },
+    {
+      "condition": "bw / far (40 cm)",
+      "panel": "blank",
+      "pass": true,
+      "path_complete": true,
+      "findings": [],
+      "frames": 98,
+      "mean_yolo_ms": 29.0,
+      "mean_pipeline_ms": 36.4
+    },
+    {
+      "condition": "bw / close (18 cm)",
+      "panel": "defects",
+      "pass": true,
+      "path_complete": true,
+      "findings": [
+        {
+          "number": 1,
+          "type": "bird_dropping",
+          "label": "Bird dropping",
+          "sheet": "A1",
+          "pass": "top pass",
+          "confidence": 0.95,
+          "time": 0.75
+        },
+        {
+          "number": 2,
+          "type": "bird_dropping",
+          "label": "Bird dropping",
+          "sheet": "C2",
+          "pass": "right side",
+          "confidence": 0.87,
+          "time": 16.75
+        },
+        {
+          "number": 3,
+          "type": "crack",
+          "label": "Crack",
+          "sheet": "B2",
+          "pass": "bottom pass",
+          "confidence": 0.74,
+          "time": 24.25
+        }
+      ],
+      "frames": 127,
+      "mean_yolo_ms": 32.3,
+      "mean_pipeline_ms": 45.5
+    },
+    {
+      "condition": "bw / close (18 cm)",
+      "panel": "blank",
+      "pass": true,
+      "path_complete": true,
+      "findings": [],
+      "frames": 126,
+      "mean_yolo_ms": 27.2,
+      "mean_pipeline_ms": 38.2
+    },
+    {
+      "condition": "bw / dim + blur",
+      "panel": "defects",
+      "pass": true,
+      "path_complete": true,
+      "findings": [
+        {
+          "number": 1,
+          "type": "bird_dropping",
+          "label": "Bird dropping",
+          "sheet": "A1",
+          "pass": "top pass",
+          "confidence": 0.85,
+          "time": 0.75
+        },
+        {
+          "number": 2,
+          "type": "bird_dropping",
+          "label": "Bird dropping",
+          "sheet": "C2",
+          "pass": "right side",
+          "confidence": 0.84,
+          "time": 15.5
+        },
+        {
+          "number": 3,
+          "type": "crack",
+          "label": "Crack",
+          "sheet": "B2",
+          "pass": "bottom pass",
+          "confidence": 0.85,
+          "time": 21.75
+        }
+      ],
+      "frames": 116,
+      "mean_yolo_ms": 24.6,
+      "mean_pipeline_ms": 28.7
+    },
+    {
+      "condition": "bw / dim + blur",
+      "panel": "blank",
+      "pass": true,
+      "path_complete": true,
+      "findings": [],
+      "frames": 116,
+      "mean_yolo_ms": 24.9,
+      "mean_pipeline_ms": 29.0
+    },
+    {
+      "condition": "bw / bright + noise",
+      "panel": "defects",
+      "pass": true,
+      "path_complete": true,
+      "findings": [
+        {
+          "number": 1,
+          "type": "bird_dropping",
+          "label": "Bird dropping",
+          "sheet": "A1",
+          "pass": "top pass",
+          "confidence": 0.82,
+          "time": 0.75
+        },
+        {
+          "number": 2,
+          "type": "bird_dropping",
+          "label": "Bird dropping",
+          "sheet": "C2",
+          "pass": "right side",
+          "confidence": 0.86,
+          "time": 15.5
+        },
+        {
+          "number": 3,
+          "type": "crack",
+          "label": "Crack",
+          "sheet": "B2",
+          "pass": "bottom pass",
+          "confidence": 0.63,
+          "time": 21.5
+        }
+      ],
+      "frames": 116,
+      "mean_yolo_ms": 20.8,
+      "mean_pipeline_ms": 32.6
+    },
+    {
+      "condition": "bw / bright + noise",
+      "panel": "blank",
+      "pass": true,
+      "path_complete": true,
+      "findings": [],
+      "frames": 116,
+      "mean_yolo_ms": 19.3,
+      "mean_pipeline_ms": 29.6
+    },
+    {
+      "condition": "bw / wood table",
+      "panel": "defects",
+      "pass": true,
+      "path_complete": true,
+      "findings": [
+        {
+          "number": 1,
+          "type": "bird_dropping",
+          "label": "Bird dropping",
+          "sheet": "A1",
+          "pass": "top pass",
+          "confidence": 0.86,
+          "time": 0.75
+        },
+        {
+          "number": 2,
+          "type": "bird_dropping",
+          "label": "Bird dropping",
+          "sheet": "C2",
+          "pass": "right side",
+          "confidence": 0.88,
+          "time": 15.5
+        },
+        {
+          "number": 3,
+          "type": "crack",
+          "label": "Crack",
+          "sheet": "B2",
+          "pass": "bottom pass",
+          "confidence": 0.81,
+          "time": 21.75
+        }
+      ],
+      "frames": 116,
+      "mean_yolo_ms": 16.8,
+      "mean_pipeline_ms": 23.3
+    },
+    {
+      "condition": "bw / wood table",
+      "panel": "blank",
+      "pass": true,
+      "path_complete": true,
+      "findings": [],
+      "frames": 116,
+      "mean_yolo_ms": 16.1,
+      "mean_pipeline_ms": 22.5
+    },
+    {
+      "condition": "colour / 25 cm",
+      "panel": "defects",
+      "pass": true,
+      "path_complete": true,
+      "findings": [
+        {
+          "number": 1,
+          "type": "bird_dropping",
+          "label": "Bird dropping",
+          "sheet": "A1",
+          "pass": "top pass",
+          "confidence": 0.86,
+          "time": 0.75
+        },
+        {
+          "number": 2,
+          "type": "bird_dropping",
+          "label": "Bird dropping",
+          "sheet": "C2",
+          "pass": "right side",
+          "confidence": 0.84,
+          "time": 15.25
+        },
+        {
+          "number": 3,
+          "type": "crack",
+          "label": "Crack",
+          "sheet": "B2",
+          "pass": "bottom pass",
+          "confidence": 0.81,
+          "time": 22.0
+        }
+      ],
+      "frames": 115,
+      "mean_yolo_ms": 22.1,
+      "mean_pipeline_ms": 30.6
+    },
+    {
+      "condition": "colour / 25 cm",
+      "panel": "blank",
+      "pass": true,
+      "path_complete": true,
+      "findings": [],
+      "frames": 115,
+      "mean_yolo_ms": 18.2,
+      "mean_pipeline_ms": 25.0
+    }
+  ]
+}

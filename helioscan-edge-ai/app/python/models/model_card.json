@@ -1,0 +1,43 @@
+{
+  "model": "YOLO11n (Ultralytics), fine-tuned",
+  "task": "object detection",
+  "classes": [
+    "bird_dropping",
+    "crack"
+  ],
+  "input": {
+    "size": 320,
+    "format": "RGB float32 NCHW, 0..1, letterboxed"
+  },
+  "output": "1 x (4 + num_classes) x anchors, boxes as cx, cy, w, h in input pixels",
+  "pretrained_from": "yolo11n.pt",
+  "training_minutes": 15.8,
+  "dataset": {
+    "train": {
+      "images": 300,
+      "boxes": {
+        "bird_dropping": 139,
+        "crack": 75
+      },
+      "negatives": 106
+    },
+    "val": {
+      "images": 80,
+      "boxes": {
+        "bird_dropping": 29,
+        "crack": 18
+      },
+      "negatives": 34
+    }
+  },
+  "validation": {
+    "precision": 0.9943,
+    "recall": 1.0,
+    "mAP50": 0.995,
+    "mAP50_95": 0.8422,
+    "AP50_per_class": {
+      "bird_dropping": 0.995,
+      "crack": 0.995
+    }
+  }
+}

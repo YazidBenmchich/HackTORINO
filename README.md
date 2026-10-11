@@ -102,6 +102,31 @@ Each scenario places a real incident in the simulation, which is then detected t
 
 ---
 
+## Payload prototype: on-device YOLO on the Arduino UNO Q
+
+The simulation shows what the payload does; [`helioscan-edge-ai/`](helioscan-edge-ai) is a first piece of the real thing. It is a hand-held stand-in for the payload: a **phone is the camera**, and **all the vision runs on an Arduino UNO Q**, with no cloud. We scan a printed solar panel (6 A4 sheets, with a bird dropping, a crack and a second bird dropping) the way the drone would.
+
+```mermaid
+flowchart LR
+    P["Phone camera<br/>JPEG frames"] -- "Wi-Fi · HTTPS" --> Q["Arduino UNO Q (Linux)<br/>YOLO11n · ONNX Runtime<br/>tracking · U-path mission"]
+    Q -- "boxes · alerts · report" --> P
+    Q -- "Bridge (RPC)" --> M["STM32 microcontroller<br/>LED alerts"]
+```
+
+- **YOLO11n detector** fine-tuned on two classes (`bird_dropping`, `crack`), exported to ONNX and run on the board's CPU.
+- **Synthetic training data**: subtracting the two print files gives exact defect boxes with no hand labelling. 300 randomised phone views (distance, tilt, black-and-white or colour print, lighting, blur, noise) were enough to train in about 15 minutes on a laptop CPU.
+- **Multi-object tracking** (ByteTrack-style), so a defect seen in many frames is reported once.
+- **The drone's coverage path**: start on an ArUco marker in the top-left corner, then follow the top edge, the right edge and the bottom edge. Each turn triggers when the next corner comes into view.
+- **Reference check** against the panel's digital profile, and a JSON inspection report at the end.
+
+| Validation (80 synthetic images not used in training) | Precision 0.994 · Recall 1.000 · mAP50 0.995 · mAP50-95 0.842 |
+|---|---|
+| **End-to-end** (simulated inspection flights through the board code) | **14/14 passed**: 3 defects on the right sheets for the defects print, 0 for the healthy print, over 7 conditions |
+
+These scores come from synthetic images and simulated flights. Setup, training and deployment are in [`helioscan-edge-ai/README.md`](helioscan-edge-ai/README.md) and its [`docs/`](helioscan-edge-ai/docs).
+
+---
+
 ## How it fits together
 
 ```mermaid
@@ -127,6 +152,7 @@ HelioScan/
 │  ├─ simulation/        scene, terrain, plant, drone, mission logic, onboard camera, side panel, video stream
 │  ├─ console/           views, plant map, charts, manual piloting, video, notifications
 │  └─ shared/            configuration, utilities, panel drawing
+├─ helioscan-edge-ai/    payload prototype: phone camera + YOLO on the Arduino UNO Q
 └─ docs/
    ├─ REFERENCE.md       full technical reference (French): controls, mission logic, every API route
    ├─ DESIGN.md          console design system

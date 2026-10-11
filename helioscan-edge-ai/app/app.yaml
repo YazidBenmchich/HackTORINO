@@ -1,0 +1,6 @@
+name: HelioScan Edge Inspection
+icon: ☀️
+description: Solar panel defect inspection. The phone streams its camera to the UNO Q, which runs YOLO detection, tracking and the drone's inspection path.
+
+bricks:
+  - arduino:web_ui
