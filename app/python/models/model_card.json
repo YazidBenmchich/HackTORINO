@@ -1,0 +1,66 @@
+{
+  "model": "YOLO11n (Ultralytics), fine-tuned",
+  "task": "object detection",
+  "classes": [
+    "bird_dropping",
+    "crack"
+  ],
+  "input": {
+    "size": 320,
+    "format": "RGB float32 NCHW, 0..1, letterboxed"
+  },
+  "output": "1 x (4 + num_classes) x anchors, boxes as cx, cy, w, h in input pixels",
+  "pretrained_from": "yolo11n.pt",
+  "training_minutes": 36.8,
+  "training_note": "run stopped early at epoch 9 (session ended, not by the time budget); this is the best checkpoint, epoch 7",
+  "dataset": {
+    "train": {
+      "images": 1232,
+      "boxes": {
+        "bird_dropping": 696,
+        "crack": 606
+      },
+      "negatives": 312
+    },
+    "val": {
+      "images": 211,
+      "boxes": {
+        "bird_dropping": 121,
+        "crack": 134
+      },
+      "negatives": 41
+    },
+    "test": {
+      "images": 240,
+      "boxes": {
+        "bird_dropping": 108,
+        "crack": 67
+      },
+      "negatives": 86
+    },
+    "test_note": "views of the printed C14 panel: its defects are never used for training"
+  },
+  "metrics_from": "tools/evaluate_detector.py (board code, precision and recall at conf 0.35)",
+  "validation": {
+    "split": "procedural panels never seen in training",
+    "precision": 0.9267,
+    "recall": 0.9922,
+    "mAP50": 0.9826,
+    "mAP50_95": 0.7217,
+    "AP50_per_class": {
+      "bird_dropping": 0.9795,
+      "crack": 0.9857
+    }
+  },
+  "test": {
+    "split": "printed C14 panel, held out (defects never seen in training)",
+    "precision": 0.9613,
+    "recall": 0.9943,
+    "mAP50": 0.9999,
+    "mAP50_95": 0.78,
+    "AP50_per_class": {
+      "bird_dropping": 0.9997,
+      "crack": 1.0
+    }
+  }
+}

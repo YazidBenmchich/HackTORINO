@@ -1,2 +1,16 @@
-node_modules/
+# Regenerable training data and checkpoints (python training/generate_dataset.py, training/train.py)
+training/dataset/
+training/runs/*/weights/
+*.pt
+
+# Local test server certificate
+tools/.cert/
+
+__pycache__/
+*.pyc
+
+# App Lab archive (python tools/package_app.py)
 dist/
+
+# Output of tools/evaluate_pipeline.py
+tools/evaluation_results.json
